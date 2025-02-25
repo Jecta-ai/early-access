@@ -6,8 +6,8 @@ use cw_paginate_storage::paginate_map;
 
 
 use crate::error::ContractError;
-use crate::msg::{ ExecuteMsg, GetRefferalResponse, InstantiateMsg, IsWhitelistedResponse, QueryMsg};
-use crate::state::{WhitelistData, ADMIN, REFFERALS, WHITELIST};
+use crate::msg::{ ExecuteMsg, GetReferralResponse, InstantiateMsg, IsWhitelistedResponse, QueryMsg};
+use crate::state::{WhitelistData, ADMIN, REFERRALS, WHITELIST};
 
 
 
@@ -71,12 +71,12 @@ pub fn execute_join_whitelist(deps: DepsMut, info: MessageInfo,ref_code:String) 
     }
 
     
-    let referrer_opt = REFFERALS.may_load(deps.storage, ref_code.to_string())?;
+    let referrer_opt = REFERRALS.may_load(deps.storage, ref_code.to_string())?;
 
     match referrer_opt {
         Some(mut referrer) => {
             referrer.count += 1; 
-            REFFERALS.save(deps.storage, ref_code.to_string(), &referrer)?;
+            REFERRALS.save(deps.storage, ref_code.to_string(), &referrer)?;
         }
         None => {
             if ref_code.to_string() != String::from(""){
@@ -96,7 +96,7 @@ pub fn execute_join_whitelist(deps: DepsMut, info: MessageInfo,ref_code:String) 
         count: 0,
     };
 
-    REFFERALS.save(deps.storage, ref_code_self.to_string(), &new_entry)?;
+    REFERRALS.save(deps.storage, ref_code_self.to_string(), &new_entry)?;
 
     WHITELIST.save(deps.storage, info.sender.to_string(), &true)?;
 
@@ -151,14 +151,14 @@ pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
         QueryMsg::IsWhitelisted{address}=>{to_json_binary(&query_is_whitelisted(deps,address)?)}
         QueryMsg::ListWhitelisted{start_after,limit}=>{to_json_binary(&query_list_whitelisted(deps,start_after,limit)?)}
         QueryMsg::ListReferrals{start_after,limit}=>{to_json_binary(&query_list_ref_codes(deps,start_after,limit)?)},
-        QueryMsg::GetRefferal { ref_code } => {to_json_binary(&query_get_refferal(deps,ref_code)?)},
+        QueryMsg::GetReferral { ref_code } => {to_json_binary(&query_get_referral(deps,ref_code)?)},
     }
 }
 
-pub fn query_get_refferal(deps: Deps, ref_code: String) -> StdResult<GetRefferalResponse> {
-    let referrer_opt = REFFERALS.load(deps.storage, ref_code.to_string())?;
+pub fn query_get_referral(deps: Deps, ref_code: String) -> StdResult<GetReferralResponse> {
+    let referrer_opt = REFERRALS.load(deps.storage, ref_code.to_string())?;
     
-    Ok(GetRefferalResponse{ ref_code, ref_address: referrer_opt.ref_address, count: referrer_opt.count })
+    Ok(GetReferralResponse{ ref_code, ref_address: referrer_opt.ref_address, count: referrer_opt.count })
 }
 
 pub fn query_list_whitelisted(
@@ -182,7 +182,7 @@ pub fn query_list_ref_codes(
 ) -> StdResult<Binary> {
     to_json_binary(&paginate_map(
         deps,
-        &REFFERALS,
+        &REFERRALS,
         start_after,
         limit,
         cosmwasm_std::Order::Descending,

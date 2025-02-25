@@ -12,4 +12,4 @@ pub struct WhitelistData {
 
 pub const ADMIN: Item<Addr> = Item::new("admin");
 pub const WHITELIST: Map<String, bool> = Map::new("whitelist");
-pub const REFFERALS: Map<String,WhitelistData> = Map::new("refferals");
+pub const REFERRALS: Map<String,WhitelistData> = Map::new("refferals");

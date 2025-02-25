@@ -19,7 +19,7 @@ pub enum ExecuteMsg {
 #[serde(rename_all = "snake_case")]
 pub enum QueryMsg {
     IsWhitelisted { address: String },
-    GetRefferal{ref_code:String},
+    GetReferral{ref_code:String},
     ListWhitelisted { start_after: Option<String>, limit: Option<u32> },
     ListReferrals { start_after: Option<String>, limit: Option<u32> },
 }
@@ -29,7 +29,7 @@ pub struct IsWhitelistedResponse {
     pub is_whitelisted: bool,
 }
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
-pub struct GetRefferalResponse {
+pub struct GetReferralResponse {
     pub ref_code: String,
     pub ref_address:String,
     pub count: u64,
